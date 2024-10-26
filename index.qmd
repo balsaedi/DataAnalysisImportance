@@ -1,0 +1,283 @@
+---
+title: "أهمية التحليل الإحصائي"
+author: د. باسم بن صالح الصاعدي
+Last update: "your.email@example.com"
+date: 15 Oct 2024 
+format: 
+  revealjs:
+    slide-number: c/t
+    chalkboard: true
+    pdf-max-pages-per-slide: 2
+    footer: "مجتمع التحليل  الإحصائي"
+    background-image: background.jpg      
+    transition: slide
+---
+
+
+## تصوير البيانات للمساعدة في إتخاذ القرار
+
+::: {.panel-tabset}
+
+## Fuel Efficiency
+
+```{r}
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(plotly)
+
+
+data(mtcars)
+
+# Create a new column to categorize cars by fuel efficiency
+mtcars <- mtcars %>%
+  mutate(efficiency = ifelse(mpg > 20, "High Efficiency", "Low Efficiency"))
+
+# Bar chart for fuel efficiency by car model
+p1 <- ggplot(mtcars, aes(x = reorder(row.names(mtcars), -mpg), y = mpg, fill = efficiency)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Fuel Efficiency (mpg) by Car Model", x = "Car Model", y = "Miles Per Gallon") +
+  theme_minimal()
+
+ggplotly(p1)
+```
+
+## Horsepower
+
+```{r}
+# Scatter plot for horsepower vs mpg
+p2 <- ggplot(mtcars, aes(x = hp, y = mpg, color = efficiency)) +
+  geom_point(size = 4) +
+  labs(title = "Horsepower vs Fuel Efficiency", x = "Horsepower", y = "Miles Per Gallon") +
+  theme_minimal()
+
+ggplotly(p2)
+```
+
+## Weight
+
+```{r}
+# Box plot for weight by efficiency category
+p3 <- ggplot(mtcars, aes(x = efficiency, y = wt, fill = efficiency)) +
+  geom_boxplot() +
+  labs(title = "Car Weight by Fuel Efficiency", x = "Efficiency Category", y = "Weight (1000 lbs)") +
+  theme_minimal()
+
+ggplotly(p3)
+```
+:::
+
+#
+
+::: {.panel-tabset}
+
+# weight over time for each diet
+```{r}
+growth_plot <- ggplot(ChickWeight, aes(x = Time, y = weight, color = as.factor(Diet), group = Chick)) +
+  geom_line() +
+  labs(title = "Chick Growth Over Time by Diet", x = "Time (days)", y = "Weight (grams)", color = "Diet") +
+  theme_minimal()
+
+ggplotly(growth_plot)
+```
+
+# Final Weights by Diet
+```{r}
+# Calculate final weights of chicks on different diets
+final_weights <- ChickWeight %>%
+  group_by(Chick) %>%
+  filter(Time == max(Time)) %>%
+  ungroup()
+
+# Box plot of final weights by diet
+final_weight_plot <- ggplot(final_weights, aes(x = as.factor(Diet), y = weight, fill = as.factor(Diet))) +
+  geom_boxplot() +
+  labs(title = "Final Weights by Diet", x = "Diet", y = "Final Weight (grams)") +
+  theme_minimal()
+
+ggplotly(final_weight_plot)
+```
+
+# Average Weight Gain by Diet
+```{r}
+# Calculate average weight gain by diet
+avg_weight_gain <- ChickWeight %>%
+  group_by(Diet) %>%
+  summarize(Average_Weight_Gain = mean(weight)) %>%
+  arrange(desc(Average_Weight_Gain))
+
+# Display summary table
+avg_weight_gain
+```
+:::
+
+
+## إستكشاف البيانات
+
+::: {.panel-tabset}
+
+# Palmer Penguins Dataset
+```{r}
+library(palmerpenguins)
+library(ggplot2)
+library(dplyr)
+
+# Load the data
+data("penguins")
+head(penguins)
+```
+
+# Summary
+```{r}
+summary(penguins)
+```
+
+### Missing Data
+```{r}
+colSums(is.na(penguins))
+```
+
+# Bill Length
+
+```{r}
+ggplot(penguins, aes(x = bill_length_mm, fill = species)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  labs(title = "Distribution of Bill Length by Species", x = "Bill Length (mm)", y = "Count")
+```
+
+# Flipper Length by Species
+```{r}
+ggplot(penguins, aes(x = species, y = flipper_length_mm, fill = species)) +
+  geom_boxplot() +
+  labs(title = "Flipper Length by Species", x = "Species", y = "Flipper Length (mm)")
+```
+
+# Bill Length vs Bill Depth
+
+```{r}
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  labs(title = "Bill Length vs Bill Depth by Species", x = "Bill Length (mm)", y = "Bill Depth (mm)")
+```
+
+# Relationships Between Variables
+
+```{r}
+penguins_numeric <- penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+corr_matrix <- cor(penguins_numeric, use = "complete.obs")
+corrplot::corrplot(corr_matrix, method = "color", type = "upper")
+```
+:::
+
+## بيانات الألماس
+
+::: {.panel-tabset}
+
+# Data
+
+```{r}
+# Load the ggplot2 package
+library(ggplot2)
+
+# Load the diamonds dataset
+data("diamonds")
+head(diamonds)
+```
+
+# Missing Data
+```{r}
+colSums(is.na(diamonds))
+```
+
+# Diamond Prices
+```{r}
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 500, fill = "lightblue", color = "black") +
+  labs(title = "Distribution of Diamond Prices", x = "Price (USD)", y = "Count")
+```
+
+# Price vs Carat:
+```{r}
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.5) +
+  labs(title = "Price vs Carat Weight", x = "Carat", y = "Price (USD)")
+```
+
+# Price by Cut Quality
+```{r}
+ggplot(diamonds, aes(x = cut, y = price, fill = cut)) +
+  geom_boxplot() +
+  labs(title = "Price by Diamond Cut", x = "Cut Quality", y = "Price (USD)")
+```
+
+# Price by Clarity
+```{r}
+ggplot(diamonds, aes(x = clarity, y = price, fill = clarity)) +
+  geom_boxplot() +
+  labs(title = "Price by Clarity", x = "Clarity", y = "Price (USD)")
+```
+
+# Relationships Between Variables
+```{r}
+diamonds_numeric <- diamonds %>% select(price, carat, depth, table)
+corr_matrix <- cor(diamonds_numeric)
+corrplot::corrplot(corr_matrix, method = "color", type = "upper")
+```
+:::
+
+## معرفة العوامل المؤثرة على متغير
+
+::: {.panel-tabset}
+# Heart Disease Dataset 
+
+```{r}
+# Install and load mlbench package
+# install.packages("mlbench")
+library(mlbench)
+library(ggplot2)
+library(corrplot)
+library(caret)
+
+# Load Heart Disease dataset
+data("PimaIndiansDiabetes")
+df <- PimaIndiansDiabetes
+head(df)
+```
+
+# Glucose vs Outcome (Diabetes)
+
+```{r}
+ggplot(df, aes(x = glucose, fill = factor(diabetes))) +
+  geom_histogram(binwidth = 10, alpha = 0.6, position = "identity") +
+  labs(title = "Glucose Levels vs Diabetes Outcome", x = "Glucose", fill = "Diabetes")
+```
+
+# Correlation Matrix
+
+```{r}
+corr_matrix <- cor(df[,-9])  # Exclude the outcome variable
+corrplot(corr_matrix, method = "color", type = "upper")
+```
+
+# بناء نموذج التصنيف
+```{r}
+library(randomForest)
+set.seed(123)
+rf_model <- randomForest(diabetes ~ ., data = df, importance = TRUE)
+varImpPlot(rf_model)
+```
+
+# Most Important Features
+
+```{r}
+importance_data <- as.data.frame(importance(rf_model))
+importance_data$Variable <- rownames(importance_data)
+
+ggplot(importance_data, aes(x = reorder(Variable, MeanDecreaseGini), y = MeanDecreaseGini)) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  coord_flip() +
+  labs(title = "Feature Importance: Random Forest", x = "Variable", y = "Mean Decrease in Gini")
+```
+:::
+
