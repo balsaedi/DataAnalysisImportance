@@ -1,0 +1,631 @@
+---
+title: "أهمية التحليل الإحصائي"
+author: د. باسم بن صالح الصاعدي
+date: 27 Oct 2024 
+format: pptx
+---
+
+# الهدف الأول: تصوير البيانات للمساعدة في إتخاذ القرار
+
+#
+
+
+## Fuel Efficiency
+
+```{r}
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(plotly)
+
+
+data(mtcars)
+
+# Create a new column to categorize cars by fuel efficiency
+mtcars <- mtcars %>%
+  mutate(efficiency = ifelse(mpg > 20, "High Efficiency", "Low Efficiency"))
+
+# Bar chart for fuel efficiency by car model
+p1 <- ggplot(mtcars, aes(x = reorder(row.names(mtcars), -mpg), y = mpg, fill = efficiency)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Fuel Efficiency (mpg) by Car Model", x = "Car Model", y = "Miles Per Gallon") +
+  theme_minimal()
+
+ggplotly(p1)
+```
+
+
+## Horsepower
+
+```{r}
+# Scatter plot for horsepower vs mpg
+p2 <- ggplot(mtcars, aes(x = hp, y = mpg, color = efficiency)) +
+  geom_point(size = 4) +
+  labs(title = "Horsepower vs Fuel Efficiency", x = "Horsepower", y = "Miles Per Gallon") +
+  theme_minimal()
+
+ggplotly(p2)
+```
+
+## Weight
+
+```{r}
+# Box plot for weight by efficiency category
+p3 <- ggplot(mtcars, aes(x = efficiency, y = wt, fill = efficiency)) +
+  geom_boxplot() +
+  labs(title = "Car Weight by Fuel Efficiency", x = "Efficiency Category", y = "Weight (1000 lbs)") +
+  theme_minimal()
+
+ggplotly(p3)
+```
+
+
+#
+
+
+# weight over time for each diet
+```{r}
+growth_plot <- ggplot(ChickWeight, aes(x = Time, y = weight, color = as.factor(Diet), group = Chick)) +
+  geom_line() +
+  labs(title = "Chick Growth Over Time by Diet", x = "Time (days)", y = "Weight (grams)", color = "Diet") +
+  theme_minimal()
+
+ggplotly(growth_plot)
+```
+
+# Final Weights by Diet
+```{r}
+# Calculate final weights of chicks on different diets
+final_weights <- ChickWeight %>%
+  group_by(Chick) %>%
+  filter(Time == max(Time)) %>%
+  ungroup()
+
+# Box plot of final weights by diet
+final_weight_plot <- ggplot(final_weights, aes(x = as.factor(Diet), y = weight, fill = as.factor(Diet))) +
+  geom_boxplot() +
+  labs(title = "Final Weights by Diet", x = "Diet", y = "Final Weight (grams)") +
+  theme_minimal()
+
+ggplotly(final_weight_plot)
+```
+
+# Average Weight Gain by Diet
+```{r}
+# Calculate average weight gain by diet
+avg_weight_gain <- ChickWeight %>%
+  group_by(Diet) %>%
+  summarize(Average_Weight_Gain = mean(weight)) %>%
+  arrange(desc(Average_Weight_Gain))
+
+# Display summary table
+avg_weight_gain
+```
+
+
+
+# الهدف الثاني: إستكشاف البيانات
+
+## Palmer Penguins Dataset
+
+![](lter_penguins.png){fig-align=center width="100%"}
+
+```{r}
+library(palmerpenguins)
+library(ggplot2)
+library(dplyr)
+
+# Load the data
+data("penguins")
+head(penguins)
+```
+
+## Summary
+
+![](culmen_depth.png){fig-align=center width="100%"}
+```{r}
+summary(penguins)
+```
+
+## Missing Data
+```{r}
+colSums(is.na(penguins))
+```
+
+## Bill Length
+
+```{r}
+ggplot(penguins, aes(x = bill_length_mm, fill = species)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  labs(title = "Distribution of Bill Length by Species", x = "Bill Length (mm)", y = "Count")
+```
+
+## Flipper Length by Species
+```{r}
+ggplot(penguins, aes(x = species, y = flipper_length_mm, fill = species)) +
+  geom_boxplot() +
+  labs(title = "Flipper Length by Species", x = "Species", y = "Flipper Length (mm)")
+```
+
+## Bill Length vs Bill Depth
+
+```{r}
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  labs(title = "Bill Length vs Bill Depth by Species", x = "Bill Length (mm)", y = "Bill Depth (mm)")
+```
+
+## Relationships Between Variables
+
+```{r}
+penguins_numeric <- penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+corr_matrix <- cor(penguins_numeric, use = "complete.obs")
+corrplot::corrplot(corr_matrix, method = "color", type = "upper")
+```
+
+
+# بيانات الألماس
+
+
+## Data
+
+```{r}
+# Load the ggplot2 package
+library(ggplot2)
+
+# Load the diamonds dataset
+data("diamonds")
+head(diamonds)
+```
+
+## Missing Data
+```{r}
+colSums(is.na(diamonds))
+```
+
+## Diamond Prices
+```{r}
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 500, fill = "lightblue", color = "black") +
+  labs(title = "Distribution of Diamond Prices", x = "Price (USD)", y = "Count")
+```
+
+## Price vs Carat:
+```{r}
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.5) +
+  labs(title = "Price vs Carat Weight", x = "Carat", y = "Price (USD)")
+```
+
+## Price by Cut Quality
+```{r}
+ggplot(diamonds, aes(x = cut, y = price, fill = cut)) +
+  geom_boxplot() +
+  labs(title = "Price by Diamond Cut", x = "Cut Quality", y = "Price (USD)")
+```
+
+## Price by Clarity
+```{r}
+ggplot(diamonds, aes(x = clarity, y = price, fill = clarity)) +
+  geom_boxplot() +
+  labs(title = "Price by Clarity", x = "Clarity", y = "Price (USD)")
+```
+
+## Relationships Between Variables
+```{r}
+diamonds_numeric <- diamonds %>% select(price, carat, depth, table)
+corr_matrix <- cor(diamonds_numeric)
+corrplot::corrplot(corr_matrix, method = "color", type = "upper")
+```
+
+
+# الهدف الثالث: معرفة العوامل المؤثرة على متغير
+
+## Heart Disease Dataset 
+
+```{r}
+# Install and load mlbench package
+# install.packages("mlbench")
+library(mlbench)
+library(ggplot2)
+library(corrplot)
+library(caret)
+
+# Load Heart Disease dataset
+data("PimaIndiansDiabetes")
+df <- PimaIndiansDiabetes
+head(df)
+```
+
+## Glucose vs Outcome (Diabetes)
+
+```{r}
+ggplot(df, aes(x = glucose, fill = factor(diabetes))) +
+  geom_histogram(binwidth = 10, alpha = 0.6, position = "identity") +
+  labs(title = "Glucose Levels vs Diabetes Outcome", x = "Glucose", fill = "Diabetes")
+```
+
+## Correlation Matrix
+
+```{r}
+corr_matrix <- cor(df[,-9])  # Exclude the outcome variable
+corrplot(corr_matrix, method = "color", type = "upper")
+```
+
+## بناء نموذج التصنيف
+```{r}
+library(randomForest)
+set.seed(123)
+rf_model <- randomForest(diabetes ~ ., data = df, importance = TRUE)
+varImpPlot(rf_model)
+```
+
+## أهم العوامل المؤثرة  
+
+```{r}
+importance_data <- as.data.frame(importance(rf_model))
+importance_data$Variable <- rownames(importance_data)
+
+ggplot(importance_data, aes(x = reorder(Variable, MeanDecreaseGini), y = MeanDecreaseGini)) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  coord_flip() +
+  labs(title = "Feature Importance: Random Forest", x = "Variable", y = "Mean Decrease in Gini")
+```
+
+
+# مجموعة بيانات الائتمان
+
+
+## البيانات
+
+```{r}
+# Install and load necessary packages
+# install.packages("ISLR")
+library(ISLR)
+library(ggplot2)
+library(corrplot)
+library(caret)
+
+# Load the Credit dataset
+data("Credit")
+head(Credit)
+```
+
+## Correlation Matrix
+
+```{r}
+credit_numeric <- Credit %>%
+  select(Balance, Income, Limit, Rating, Age)
+corr_matrix <- cor(credit_numeric)
+corrplot(corr_matrix, method = "color", type = "upper", tl.col = "black", tl.cex = 0.7)
+```
+
+## Income vs Balance
+
+```{r}
+ggplot(Credit, aes(x = Income, y = Balance)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "Income vs Credit Balance", x = "Income", y = "Credit Balance")
+```
+
+## Gender vs Balance
+
+```{r}
+ggplot(Credit, aes(x = Gender, y = Balance, fill = Gender)) +
+  geom_boxplot() +
+  labs(title = "Credit Balance by Gender", x = "Gender", y = "Credit Balance")
+```
+
+## بناء نموذج التصنيف
+```{r}
+set.seed(123)
+train_index <- createDataPartition(Credit$Balance, p = 0.8, list = FALSE)
+train_data <- Credit[train_index, ]
+test_data <- Credit[-train_index, ]
+
+# Train a Random Forest model
+rf_model <- randomForest(Balance ~ Income + Limit + Rating + Age + Gender, data = train_data)
+
+# Variable Importance Plot
+varImpPlot(rf_model)
+```
+
+## أهم العوامل المؤثرة  
+
+```{r}
+# Get the importance of variables from the Random Forest model
+importance_data <- as.data.frame(importance(rf_model)) 
+
+# Add a column for variable names
+importance_data$Variable <- rownames(importance_data)
+
+# Plot using 'IncNodePurity' (Mean Decrease in Node Impurity) for regression
+ggplot(importance_data, aes(x = reorder(Variable, IncNodePurity), y = IncNodePurity)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  coord_flip() +
+  labs(title = "Feature Importance in Predicting Credit Balance", x = "Variable", y = "Importance")
+```
+
+# الهدف الرابع: التنبؤ
+
+
+# بيانات ثاني أكسيد الكربون
+
+
+
+## البيانات
+
+```{r}
+# Load necessary packages
+library(ggplot2)
+library(caret)
+library(randomForest)
+
+# Load the CO2 dataset
+data("CO2")
+head(CO2)
+```
+
+## Exploratory Data Analysis
+
+```{r}
+summary(CO2)
+```
+
+##  CO2 Uptake by Plant Type
+
+```{r}
+ggplot(CO2, aes(x = Type, y = uptake, fill = Type)) +
+  geom_boxplot() +
+  labs(title = "CO2 Uptake by Plant Type", x = "Plant Type", y = "CO2 Uptake")
+```
+
+## CO2 Uptake by Treatment
+
+```{r}
+ggplot(CO2, aes(x = Treatment, y = uptake, fill = Treatment)) +
+  geom_boxplot() +
+  labs(title = "CO2 Uptake by Treatment Type", x = "Treatment Type", y = "CO2 Uptake")
+```
+
+## CO2 Uptake vs Concentration
+```{r}
+ggplot(CO2, aes(x = conc, y = uptake, color = Treatment)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "CO2 Uptake vs Concentration", x = "Concentration of CO2", y = "CO2 Uptake")
+```
+
+## بناء نموذج التصنيف
+```{r}
+set.seed(123)
+
+# Split data into training and testing sets
+train_index <- createDataPartition(CO2$uptake, p = 0.8, list = FALSE)
+train_data <- CO2[train_index, ]
+test_data <- CO2[-train_index, ]
+
+# Train a Random Forest model
+rf_model <- randomForest(uptake ~ Type + Treatment + conc, data = train_data)
+
+# Variable Importance Plot
+varImpPlot(rf_model)
+```
+
+
+## أهم العوامل المؤثرة  
+
+```{r}
+# Get the importance of variables from the Random Forest model
+importance_data <- as.data.frame(importance(rf_model))
+
+# Add a column for variable names
+importance_data$Variable <- rownames(importance_data)
+
+# Plot using 'IncNodePurity' (Mean Decrease in Node Impurity) for regression
+ggplot(importance_data, aes(x = reorder(Variable, IncNodePurity), y = IncNodePurity)) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  coord_flip() +
+  labs(title = "Feature Importance in Predicting CO2 Uptake", x = "Variable", y = "Importance")
+```
+
+## تقييم النموذج الإحصائي
+
+```{r}
+predictions <- predict(rf_model, newdata = test_data)
+
+ggplot(data.frame(Actual = test_data$uptake, Predicted = predictions), aes(x = Actual, y = Predicted)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Actual vs Predicted CO2 Uptake", x = "Actual CO2 Uptake", y = "Predicted CO2 Uptake")
+```
+
+##
+
+```{r}
+residuals <- test_data$uptake - predictions
+ggplot(data.frame(Residuals = residuals, Predicted = predictions), aes(x = Predicted, y = Residuals)) +
+  geom_point(alpha = 0.5, color = "purple") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residual Plot", x = "Predicted CO2 Uptake", y = "Residuals")
+```
+
+##
+
+```{r}
+# Load necessary library
+library(ggplot2)
+library(caret)
+
+# Make predictions on the test data
+predictions <- predict(rf_model, newdata = test_data)
+
+# Model performance: R-squared, RMSE, MAE
+model_performance <- postResample(pred = predictions, obs = test_data$uptake)
+
+# Display the performance metrics
+model_performance
+
+# Visualizing Actual vs Predicted values
+ggplot(data.frame(Actual = test_data$uptake, Predicted = predictions), aes(x = Actual, y = Predicted)) +
+  geom_point(alpha = 0.6, color = "blue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Actual vs Predicted CO2 Uptake", 
+       x = "Actual CO2 Uptake", 
+       y = "Predicted CO2 Uptake") +
+  theme_minimal()
+```
+
+# مثال عام
+
+# بيانات مشاركة الدراجات
+
+```{r}
+# Load necessary packages
+library(ggplot2)
+library(corrplot)
+library(caret)
+library(dplyr)
+library(randomForest)
+
+# Load dataset (assuming you've downloaded the file as "hour.csv")
+bike_data <- read.csv("hour.csv")
+
+# Inspect the dataset
+head(bike_data)
+```
+
+# ملخص البيانات
+
+```{r}
+summary(bike_data)
+```
+
+# تنظيف البيانات
+
+```{r}
+# Remove any unnecessary columns (if applicable)
+bike_data <- bike_data %>%
+  select(-instant, -dteday, -casual, -registered)  # These columns are not needed for our prediction task
+
+# Check for missing data
+colSums(is.na(bike_data))
+```
+
+# تصوير البيانات
+
+##  Distribution of the Target Variable (cnt)
+
+```{r}
+ggplot(bike_data, aes(x = cnt)) +
+  geom_histogram(binwidth = 500, fill = "blue", color = "black") +
+  labs(title = "Distribution of Total Bike Rentals", x = "Total Rentals (cnt)", y = "Frequency")
+
+```
+
+##  Seasonal Effect on Rentals:
+
+```{r}
+ggplot(bike_data, aes(x = factor(season), y = cnt, fill = factor(season))) +
+  geom_boxplot() +
+  labs(title = "Total Rentals by Season", x = "Season", y = "Total Rentals")
+```
+
+##  Correlation Matrix
+
+```{r}
+numeric_vars <- bike_data %>%
+  select(temp, atemp, hum, windspeed, cnt)
+
+corr_matrix <- cor(numeric_vars)
+corrplot(corr_matrix, method = "color", type = "upper", tl.col = "black", tl.cex = 0.7)
+```
+
+##  Weather Condition Effect
+
+```{r}
+ggplot(bike_data, aes(x = factor(weathersit), y = cnt, fill = factor(weathersit))) +
+  geom_boxplot() +
+  labs(title = "Effect of Weather Conditions on Bike Rentals", x = "Weather Situation", y = "Total Rentals")
+```
+
+
+# بناء نموذج التصنيف
+
+```{r}
+set.seed(123)
+
+# Splitting data into training and testing sets
+train_index <- createDataPartition(bike_data$cnt, p = 0.8, list = FALSE)
+train_data <- bike_data[train_index, ]
+test_data <- bike_data[-train_index, ]
+
+# Train a Random Forest model for feature importance
+rf_model <- randomForest(cnt ~ ., data = train_data)
+
+# Variable Importance Plot
+varImpPlot(rf_model)
+```
+
+
+# أهم العوامل المؤثرة
+
+```{r}
+# Assuming that the Random Forest model 'rf_model' is already trained
+
+# Get the importance of variables from the Random Forest model
+importance_data <- as.data.frame(importance(rf_model))
+
+# Add a column for variable names
+importance_data$Variable <- rownames(importance_data)
+
+# Plot the importance of variables using ggplot2
+ggplot(importance_data, aes(x = reorder(Variable, IncNodePurity), y = IncNodePurity)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  coord_flip() +
+  labs(title = "Feature Importance in Predicting Bike Rentals", 
+       x = "Variable", 
+       y = "Importance (Increase in Node Purity)") +
+  theme_minimal()
+```
+
+
+## بناء نموذج تنبؤي
+
+```{r}
+# Train the Random Forest model
+set.seed(123)
+rf_model <- randomForest(cnt ~ temp + atemp + hum + windspeed + season + weathersit + weekday + workingday, data = train_data)
+
+# Print the model summary
+print(rf_model)
+```
+
+## تقييم النموذج الإحصائي
+
+
+```{r}
+# Make predictions on the test data
+predictions <- predict(rf_model, newdata = test_data)
+
+# Plot Actual vs Predicted values
+ggplot(data.frame(Actual = test_data$cnt, Predicted = predictions), aes(x = Actual, y = Predicted)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Actual vs Predicted Bike Rentals", x = "Actual Rentals", y = "Predicted Rentals")
+
+# Performance Metrics (RMSE and R-squared)
+postResample(pred = predictions, obs = test_data$cnt)
+```
+
+#
+
+![](FinalImage.png){fig-align=center width="100%"}
+
+#
+
+![](PHOTO-2024-10-27-19-56-46.jpg){fig-align=center width="70%"}
+
+
