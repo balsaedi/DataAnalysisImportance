@@ -268,7 +268,7 @@ rf_model <- randomForest(diabetes ~ ., data = df, importance = TRUE)
 varImpPlot(rf_model)
 ```
 
-# Most Important Features
+# أهم العوامل المؤثرة  
 
 ```{r}
 importance_data <- as.data.frame(importance(rf_model))
@@ -278,6 +278,82 @@ ggplot(importance_data, aes(x = reorder(Variable, MeanDecreaseGini), y = MeanDec
   geom_bar(stat = "identity", fill = "lightgreen") +
   coord_flip() +
   labs(title = "Feature Importance: Random Forest", x = "Variable", y = "Mean Decrease in Gini")
+```
+:::
+
+## مجموعة بيانات الائتمان
+
+::: {.panel-tabset}
+
+#
+
+```{r}
+# Install and load necessary packages
+# install.packages("ISLR")
+library(ISLR)
+library(ggplot2)
+library(corrplot)
+library(caret)
+
+# Load the Credit dataset
+data("Credit")
+head(Credit)
+```
+
+# Correlation Matrix
+
+```{r}
+credit_numeric <- Credit %>%
+  select(Balance, Income, Limit, Rating, Age)
+corr_matrix <- cor(credit_numeric)
+corrplot(corr_matrix, method = "color", type = "upper", tl.col = "black", tl.cex = 0.7)
+```
+
+# Income vs Balance
+
+```{r}
+ggplot(Credit, aes(x = Income, y = Balance)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "Income vs Credit Balance", x = "Income", y = "Credit Balance")
+```
+
+# Gender vs Balance
+
+```{r}
+ggplot(Credit, aes(x = Gender, y = Balance, fill = Gender)) +
+  geom_boxplot() +
+  labs(title = "Credit Balance by Gender", x = "Gender", y = "Credit Balance")
+```
+
+# بناء نموذج التصنيف
+```{r}
+set.seed(123)
+train_index <- createDataPartition(Credit$Balance, p = 0.8, list = FALSE)
+train_data <- Credit[train_index, ]
+test_data <- Credit[-train_index, ]
+
+# Train a Random Forest model
+rf_model <- randomForest(Balance ~ Income + Limit + Rating + Age + Gender, data = train_data)
+
+# Variable Importance Plot
+varImpPlot(rf_model)
+```
+
+# أهم العوامل المؤثرة  
+
+```{r}
+# Get the importance of variables from the Random Forest model
+importance_data <- as.data.frame(importance(rf_model)) 
+
+# Add a column for variable names
+importance_data$Variable <- rownames(importance_data)
+
+# Plot using 'IncNodePurity' (Mean Decrease in Node Impurity) for regression
+ggplot(importance_data, aes(x = reorder(Variable, IncNodePurity), y = IncNodePurity)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  coord_flip() +
+  labs(title = "Feature Importance in Predicting Credit Balance", x = "Variable", y = "Importance")
 ```
 :::
 
