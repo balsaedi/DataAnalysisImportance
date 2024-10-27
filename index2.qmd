@@ -2,14 +2,14 @@
 title: "أهمية التحليل الإحصائي"
 author: د. باسم بن صالح الصاعدي
 Last update: "your.email@example.com"
-date: 15 Oct 2024 
+date: 27 Oct 2024 
 format: 
   revealjs:
     slide-number: c/t
     chalkboard: true
     pdf-max-pages-per-slide: 2
     footer: "مجتمع التحليل  الإحصائي"
-    background-image: background.jpg      
+    background-image: background.jpg  
     transition: slide
 ---
 
