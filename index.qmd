@@ -631,8 +631,10 @@ postResample(pred = predictions, obs = test_data$cnt)
 
 #
 
-![](FinalImage.png){fig-align=center width="35%"}
+![](FinalImage.png){fig-align=center width="100%"}
 
-![](PHOTO-2024-10-27-19-56-46.jpg){fig-align=center width="50%"}
+#
+
+![](PHOTO-2024-10-27-19-56-46.jpg){fig-align=center width="70%"}
 
 
